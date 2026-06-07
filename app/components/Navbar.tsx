@@ -30,6 +30,9 @@ export default function Navbar() {
             <Link href="/dashboard" className="hover:text-train-secondary transition">
               Dashboard
             </Link>
+            <Link href="/privacy" className="hover:text-train-secondary transition">
+              Privacy
+            </Link>
             {user ? (
               <div className="flex items-center space-x-4">
                 <span className="text-sm">
@@ -73,6 +76,9 @@ export default function Navbar() {
               </Link>
               <Link href="/dashboard" className="hover:text-train-secondary transition">
                 Dashboard
+              </Link>
+              <Link href="/privacy" className="hover:text-train-secondary transition">
+                Privacy
               </Link>
               {user ? (
                 <>

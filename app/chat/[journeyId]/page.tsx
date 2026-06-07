@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
+import ReportButton from '../../components/ReportButton';
 
 interface Message {
   id: string;
@@ -170,9 +171,15 @@ export default function ChatPage() {
                   }`}
                 >
                   {!isOwnMessage && (
-                    <p className="text-xs font-semibold mb-1 text-train-primary">
-                      {msg.sender_id === user?.id ? 'You' : 'Traveler'}
-                    </p>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-xs font-semibold text-train-primary">
+                        {msg.profiles?.full_name || 'Traveler'}
+                      </p>
+                      <ReportButton 
+                        reportedUserId={msg.sender_id} 
+                        reportedUserName={msg.profiles?.full_name || 'Traveler'} 
+                      />
+                    </div>
                   )}
                   <p className="text-sm break-words">{msg.message}</p>
                   <p className="text-xs opacity-70 mt-1">
