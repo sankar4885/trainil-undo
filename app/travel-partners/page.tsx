@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabaseClient';
 
 export default function TravelPartnersPage() {
   const { user } = useAuth();
@@ -32,27 +33,57 @@ export default function TravelPartnersPage() {
         return;
       }
 
-      // Show sample travelers for now (will connect to database later)
-      setTravelers([
-        {
-          id: 1,
-          name: 'Rahul Sharma',
-          from: 'Bangalore SBC',
-          to: 'New Delhi NDLS',
-          interests: ['Books', 'Music', 'Travel'],
-          avatar: null,
-          date: travelDate || 'Today'
-        },
-        {
-          id: 2,
-          name: 'Priya Patel',
-          from: 'Bangalore SBC',
-          to: 'New Delhi NDLS',
-          interests: ['Food', 'Photography'],
-          avatar: null,
-          date: travelDate || 'Today'
-        }
-      ]);
+      // Fetch REAL journeys from database
+      const { data: journeys, error } = await supabase
+        .from('journeys')
+        .select(`
+          *,
+          profiles (
+            full_name,
+            avatar_url,
+            interests
+          )
+        `)
+        .eq('train_number', trainNumber);
+
+      if (error) throw error;
+
+      if (journeys && journeys.length > 0) {
+        // Transform real data
+        const realTravelers = journeys.map((journey: any) => ({
+          id: journey.id,
+          journeyId: journey.id,
+          name: journey.profiles?.full_name || 'Anonymous',
+          from: journey.from_station,
+          to: journey.to_station,
+          date: journey.travel_date,
+          interests: journey.profiles?.interests || [],
+          avatar: journey.profiles?.avatar_url,
+        }));
+        setTravelers(realTravelers);
+      } else {
+        // Show mock data if no real journeys
+        setTravelers([
+          {
+            id: 1,
+            journeyId: 'sample-1',
+            name: 'Rahul Sharma (Sample)',
+            from: 'Bangalore SBC',
+            to: 'New Delhi NDLS',
+            interests: ['Books', 'Music', 'Travel'],
+            date: travelDate || 'Today'
+          },
+          {
+            id: 2,
+            journeyId: 'sample-2',
+            name: 'Priya Patel (Sample)',
+            from: 'Bangalore SBC',
+            to: 'New Delhi NDLS',
+            interests: ['Food', 'Photography'],
+            date: travelDate || 'Today'
+          }
+        ]);
+      }
       
     } catch (error) {
       console.error('Error:', error);
@@ -141,13 +172,21 @@ export default function TravelPartnersPage() {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* CHAT BUTTON - This is the updated part */}
                     {user ? (
-                      <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm">
-                        Connect
-                      </button>
+                      <a 
+                        href={`/chat/${traveler.journeyId}`}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm inline-block"
+                      >
+                        💬 Chat
+                      </a>
                     ) : (
-                      <a href="/login" className="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">
-                        Login to Connect
+                      <a 
+                        href="/login" 
+                        className="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm inline-block"
+                      >
+                        Login to Chat
                       </a>
                     )}
                   </div>
@@ -166,7 +205,7 @@ export default function TravelPartnersPage() {
         </>
       )}
 
-      {/* Create Journey Button (always visible) */}
+      {/* Create Journey Button */}
       <div className="mt-8 text-center pt-8 border-t">
         <p className="text-gray-600 mb-3">Want to find travel partners?</p>
         <a href="/create-journey" className="btn-secondary">

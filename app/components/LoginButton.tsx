@@ -5,17 +5,26 @@ import { supabase } from '../lib/supabaseClient';
 export default function LoginButton() {
   const handleGoogleLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
         },
       });
-      
-      if (error) throw error;
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('Failed to login. Please try again.');
+
+      if (error) {
+        console.error('Login error:', error);
+        alert(`Login failed: ${error.message ?? String(error)}`);
+        return;
+      }
+
+      // If Supabase returns a redirect URL, navigate there to start OAuth flow.
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error('Unexpected login error:', err);
+      alert(`Unexpected error: ${err instanceof Error ? err.message : String(err)}`);
     }
   };
 

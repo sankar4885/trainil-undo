@@ -43,7 +43,8 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link href="/login" className="bg-white text-train-primary px-4 py-1 rounded-lg hover:bg-gray-100 transition">
+              // THIS IS THE LINE TO CHANGE - changed from /login to /simple-login
+              <Link href="/simple-login" className="bg-white text-train-primary px-4 py-1 rounded-lg hover:bg-gray-100 transition">
                 Login
               </Link>
             )}
@@ -84,7 +85,8 @@ export default function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link href="/login" className="bg-white text-train-primary px-4 py-1 rounded-lg text-center">
+                // ALSO CHANGE THIS ONE IN THE MOBILE MENU
+                <Link href="/simple-login" className="bg-white text-train-primary px-4 py-1 rounded-lg text-center">
                   Login
                 </Link>
               )}
