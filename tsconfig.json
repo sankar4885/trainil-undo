@@ -30,7 +30,7 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "app/lib/railway-api.js"  ],
   "exclude": [
     "node_modules"
   ]

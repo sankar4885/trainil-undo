@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Train API Test</title>
+</head>
+<body>
+    <h1>Train API Test</h1>
+    <input type="text" id="trainNumber" placeholder="Train Number" value="12301">
+    <button onclick="testAPI()">Test</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testAPI() {
+            const trainNumber = document.getElementById('trainNumber').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/train?number=${trainNumber}`);
+                const data = await response.json();
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                
+                // Check if it's live data
+                if (data.liveStatus) {
+                    console.log('✅ LIVE DATA!');
+                } else {
+                    console.log('⚠️ Mock data (API not connected)');
+                }
+            } catch (error) {
+                resultDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
